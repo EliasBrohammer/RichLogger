@@ -7,3 +7,12 @@ DEFAULT_LOG_CONFIG = {
     "max_bytes": 1000000,
     "backup_count": 5,
 }
+
+
+DEFAULT_RICH_STYLE = {
+    "DEBUG": "bold green",
+    "INFO": "bold blue",
+    "WARNING": "bold yellow",
+    "ERROR": "bold red",
+    "CRITICAL": "bold red underline",
+}

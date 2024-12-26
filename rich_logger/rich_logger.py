@@ -4,7 +4,8 @@ import logging
 from rich.console import Console
 from rich.logging import RichHandler
 
-from rich_logger.defaults import DEFAULT_LOG_CONFIG
+from rich_logger.console_logger_highlighter import ConsoleLoggerHighlighter
+from rich_logger.defaults import DEFAULT_LOG_CONFIG, DEFAULT_RICH_STYLE
 
 
 class RichLogger:
@@ -25,6 +26,7 @@ class RichLogger:
             }
 
         merged_configurations = {**DEFAULT_LOG_CONFIG, **user_configuration}
+        merged_rich_styles = {**DEFAULT_RICH_STYLE, **{logger_name: "bold black"}}
 
         self.logger = logging.getLogger(logger_name)
         self.formatter = logging.Formatter(merged_configurations["logger_format"])
@@ -38,6 +40,7 @@ class RichLogger:
                     show_level=False,
                     show_time=False,
                     show_path=False,
+                    highlighter=ConsoleLoggerHighlighter(merged_rich_styles),
                 )
                 self.console_handler.setFormatter(self.formatter)
                 self.logger.addHandler(self.console_handler)
