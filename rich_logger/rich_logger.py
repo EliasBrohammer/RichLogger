@@ -30,15 +30,20 @@ class RichLogger:
         self.formatter = logging.Formatter(merged_configurations["logger_format"])
         self.logger.setLevel(merged_configurations["level"])
 
-        if logging_to_console:
-            self.console_handler = RichHandler(
-                console=Console(),
-                show_level=False,
-                show_time=False,
-                show_path=False,
-            )
-            self.console_handler.setFormatter(self.formatter)
-            self.logger.addHandler(self.console_handler)
+        if not self.logger.hasHandlers():
+            if logging_to_console:
+                self.console_handler = RichHandler(
+                    console=Console(),
+                    level=merged_configurations["level"],
+                    show_level=False,
+                    show_time=False,
+                    show_path=False,
+                )
+                self.console_handler.setFormatter(self.formatter)
+                self.logger.addHandler(self.console_handler)
+            else:
+                self.console_handler = logging.NullHandler()
+                self.logger.addHandler(self.console_handler)
 
     def __getattr__(self, name):
         """Delegate method calls to the logger instance."""
