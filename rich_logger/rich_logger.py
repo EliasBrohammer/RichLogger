@@ -29,7 +29,9 @@ class RichLogger:
         merged_rich_styles = {**DEFAULT_RICH_STYLE, **{logger_name: "bold black"}}
 
         self.logger = logging.getLogger(logger_name)
-        self.formatter = logging.Formatter(merged_configurations["logger_format"])
+        self.formatter = logging.Formatter(
+            merged_configurations["logger_format"], datefmt=merged_configurations["date_format"]
+        )
         self.logger.setLevel(merged_configurations["level"])
 
         if not self.logger.hasHandlers():

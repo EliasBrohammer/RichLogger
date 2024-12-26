@@ -15,4 +15,5 @@ DEFAULT_RICH_STYLE = {
     "WARNING": "bold yellow",
     "ERROR": "bold red",
     "CRITICAL": "bold red underline",
+    "TIME": "cyan",
 }
