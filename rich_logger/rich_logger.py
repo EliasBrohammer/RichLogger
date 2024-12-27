@@ -19,6 +19,15 @@ class RichLogger:
         logging_to_file: bool = False,
         logging_file_name: str = "rich_logger.log",
     ):
+        """
+        Initialize the RichLogger instance.
+        Args:
+            logger_configuration_file (str, optional): Path to the logger configuration file. Defaults to "".
+            logger_name (str, optional): Name of the logger. Defaults to "rich_logger".
+            logging_to_console (bool, optional): Flag to enable logging to console. Defaults to True.
+            logging_to_file (bool, optional): Flag to enable logging to a file. Defaults to False.
+            logging_file_name (str, optional): Name of the log file. Defaults to "rich_logger.log".
+        """
 
         user_configuration = {}
         # Load the given configuration file
@@ -35,6 +44,10 @@ class RichLogger:
 
         self.logger = logging.getLogger(logger_name)
         self.formatter = logging.Formatter(
+            self.merged_configurations["logger_format"],
+            datefmt=self.merged_configurations["date_format"],
+        )
+        self.plain_formatter = logging.Formatter(
             self.merged_configurations["logger_format"],
             datefmt=self.merged_configurations["date_format"],
         )
@@ -69,7 +82,7 @@ class RichLogger:
                 maxBytes=self.merged_configurations["max_bytes"],
                 backupCount=self.merged_configurations["backup_count"],
             )
-            self.file_handler.setFormatter(self.formatter)
+            self.file_handler.setFormatter(self.plain_formatter)
             self.logger.addHandler(self.file_handler)
         else:
             self.file_handler = logging.NullHandler()
