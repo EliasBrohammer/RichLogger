@@ -2,3 +2,4 @@ __pycache__/
 dist/
 testing_stuff/
 *.py[cod]
+*.log

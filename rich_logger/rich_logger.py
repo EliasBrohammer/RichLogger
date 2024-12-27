@@ -1,5 +1,6 @@
 import configparser
 import logging
+from logging.handlers import RotatingFileHandler
 
 from rich.console import Console
 from rich.logging import RichHandler
@@ -15,6 +16,8 @@ class RichLogger:
         logger_configuration_file: str = "",
         logger_name: str = "rich_logger",
         logging_to_console: bool = True,
+        logging_to_file: bool = False,
+        logging_file_name: str = "rich_logger.log",
     ):
 
         user_configuration = {}
@@ -38,7 +41,39 @@ class RichLogger:
         self.logger.setLevel(self.merged_configurations["level"])
 
         if not self.logger.hasHandlers():
+            self._set_up_file_logger(logging_to_file, logging_file_name)
             self._set_up_console_logger(logging_to_console)
+        else:
+            self._retrieve_file_handler()
+            self._retrieve_console_handler()
+
+    def _retrieve_file_handler(self):
+        self.file_handler = next(
+            (
+                handler
+                for handler in self.logger.handlers
+                if isinstance(handler, RotatingFileHandler)
+            ),
+            None,
+        )
+
+    def _retrieve_console_handler(self):
+        self.console_handler = next(
+            (handler for handler in self.logger.handlers if isinstance(handler, RichHandler)), None
+        )
+
+    def _set_up_file_logger(self, logging_to_file: bool, logging_file_name: str):
+        if logging_to_file:
+            self.file_handler = RotatingFileHandler(
+                logging_file_name,
+                maxBytes=self.merged_configurations["max_bytes"],
+                backupCount=self.merged_configurations["backup_count"],
+            )
+            self.file_handler.setFormatter(self.formatter)
+            self.logger.addHandler(self.file_handler)
+        else:
+            self.file_handler = logging.NullHandler()
+            self.logger.addHandler(self.file_handler)
 
     def _set_up_console_logger(self, logging_to_console: bool):
         if logging_to_console:
