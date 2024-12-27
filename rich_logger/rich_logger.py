@@ -6,6 +6,7 @@ from rich.logging import RichHandler
 
 from rich_logger.console_logger_highlighter import ConsoleLoggerHighlighter
 from rich_logger.defaults import DEFAULT_LOG_CONFIG, DEFAULT_RICH_STYLE
+from rich_logger.utils import get_date_as_regex
 
 
 class RichLogger:
@@ -27,10 +28,12 @@ class RichLogger:
 
         merged_configurations = {**DEFAULT_LOG_CONFIG, **user_configuration}
         merged_rich_styles = {**DEFAULT_RICH_STYLE, **{logger_name: "bold black"}}
+        regex_time_format = get_date_as_regex(merged_configurations["date_format"])
 
         self.logger = logging.getLogger(logger_name)
         self.formatter = logging.Formatter(
-            merged_configurations["logger_format"], datefmt=merged_configurations["date_format"]
+            merged_configurations["logger_format"],
+            datefmt=merged_configurations["date_format"],
         )
         self.logger.setLevel(merged_configurations["level"])
 
@@ -42,7 +45,10 @@ class RichLogger:
                     show_level=False,
                     show_time=False,
                     show_path=False,
-                    highlighter=ConsoleLoggerHighlighter(merged_rich_styles),
+                    highlighter=ConsoleLoggerHighlighter(
+                        keywords_n_styles=merged_rich_styles,
+                        regex_time_format=regex_time_format,
+                    ),
                 )
                 self.console_handler.setFormatter(self.formatter)
                 self.logger.addHandler(self.console_handler)
