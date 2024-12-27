@@ -26,35 +26,38 @@ class RichLogger:
                 key: parser.get("logging", key, fallback=None) for key in parser["logging"]
             }
 
-        merged_configurations = {**DEFAULT_LOG_CONFIG, **user_configuration}
-        merged_rich_styles = {**DEFAULT_RICH_STYLE, **{logger_name: "bold black"}}
-        regex_time_format = get_date_as_regex(merged_configurations["date_format"])
+        self.merged_configurations = {**DEFAULT_LOG_CONFIG, **user_configuration}
+        self.merged_rich_styles = {**DEFAULT_RICH_STYLE, **{logger_name: "bold black"}}
+        self.regex_time_format = get_date_as_regex(self.merged_configurations["date_format"])
 
         self.logger = logging.getLogger(logger_name)
         self.formatter = logging.Formatter(
-            merged_configurations["logger_format"],
-            datefmt=merged_configurations["date_format"],
+            self.merged_configurations["logger_format"],
+            datefmt=self.merged_configurations["date_format"],
         )
-        self.logger.setLevel(merged_configurations["level"])
+        self.logger.setLevel(self.merged_configurations["level"])
 
         if not self.logger.hasHandlers():
-            if logging_to_console:
-                self.console_handler = RichHandler(
-                    console=Console(),
-                    level=merged_configurations["level"],
-                    show_level=False,
-                    show_time=False,
-                    show_path=False,
-                    highlighter=ConsoleLoggerHighlighter(
-                        keywords_n_styles=merged_rich_styles,
-                        regex_time_format=regex_time_format,
-                    ),
-                )
-                self.console_handler.setFormatter(self.formatter)
-                self.logger.addHandler(self.console_handler)
-            else:
-                self.console_handler = logging.NullHandler()
-                self.logger.addHandler(self.console_handler)
+            self._set_up_console_logger(logging_to_console)
+
+    def _set_up_console_logger(self, logging_to_console: bool):
+        if logging_to_console:
+            self.console_handler = RichHandler(
+                console=Console(),
+                level=self.merged_configurations["level"],
+                show_level=False,
+                show_time=False,
+                show_path=False,
+                highlighter=ConsoleLoggerHighlighter(
+                    keywords_n_styles=self.merged_rich_styles,
+                    regex_time_format=self.regex_time_format,
+                ),
+            )
+            self.console_handler.setFormatter(self.formatter)
+            self.logger.addHandler(self.console_handler)
+        else:
+            self.console_handler = logging.NullHandler()
+            self.logger.addHandler(self.console_handler)
 
     def __getattr__(self, name):
         """Delegate method calls to the logger instance."""
