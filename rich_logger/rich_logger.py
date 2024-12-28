@@ -22,7 +22,7 @@ class RichLogger:
         """
         Initialize the RichLogger instance.
         Args:
-            logger_configuration_file (str, optional): Path to the logger configuration file. Defaults to "".
+            logger_configuration_file (str, optional): Path to the logger configuration (ini) file. Defaults to "".
             logger_name (str, optional): Name of the logger. Defaults to "rich_logger".
             logging_to_console (bool, optional): Flag to enable logging to console. Defaults to True.
             logging_to_file (bool, optional): Flag to enable logging to a file. Defaults to False.
@@ -32,6 +32,7 @@ class RichLogger:
         user_configuration = {}
         # Load the given configuration file
         if len(logger_configuration_file) > 0:
+            assert logger_configuration_file.endswith(".ini"), "Configuration file must be .ini"
             parser = configparser.ConfigParser()
             parser.read(logger_configuration_file)
             user_configuration = {
@@ -47,11 +48,7 @@ class RichLogger:
             self.merged_configurations["logger_format"],
             datefmt=self.merged_configurations["date_format"],
         )
-        self.plain_formatter = logging.Formatter(
-            self.merged_configurations["logger_format"],
-            datefmt=self.merged_configurations["date_format"],
-        )
-        self.logger.setLevel(self.merged_configurations["level"])
+        self.logger.setLevel(self.merged_configurations["log_level"])
 
         if not self.logger.hasHandlers():
             self._set_up_file_logger(logging_to_file, logging_file_name)
@@ -82,7 +79,7 @@ class RichLogger:
                 maxBytes=self.merged_configurations["max_bytes"],
                 backupCount=self.merged_configurations["backup_count"],
             )
-            self.file_handler.setFormatter(self.plain_formatter)
+            self.file_handler.setFormatter(self.formatter)
             self.logger.addHandler(self.file_handler)
         else:
             self.file_handler = logging.NullHandler()
@@ -92,7 +89,7 @@ class RichLogger:
         if logging_to_console:
             self.console_handler = RichHandler(
                 console=Console(),
-                level=self.merged_configurations["level"],
+                level=self.merged_configurations["log_level"],
                 show_level=False,
                 show_time=False,
                 show_path=False,
