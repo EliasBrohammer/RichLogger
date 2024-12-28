@@ -1,5 +1,7 @@
 __pycache__/
 dist/
 testing_stuff/
+.mypy/
 *.py[cod]
 *.log
+.coverage*
