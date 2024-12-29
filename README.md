@@ -1,16 +1,3 @@
-<sub><sub> [Text to ASCII Art Generator](https://patorjk.com/software/taag/#p=display&c=bash&f=Rectangles&t=RichLogger)
-</sub></sub>
-
-```
-   _____ _     _   __
-  | __  |_|___| |_|  |   ___ ___ ___ ___ ___
-  |    -| |  _|   |  |__| . | . | . | -_|  _|
-  |__|__|_|___|_|_|_____|___|_  |_  |___|_|
-                            |___|___|
-```
-
----
-
 # RichLogger
 
 A simple Logger for Python which includes rich formatting for console prints.
